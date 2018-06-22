@@ -39,7 +39,7 @@ func launchServer(ctx *cli.Context) error {
 	strPort := fmt.Sprintf(":%s", port)
 
 	header := http.Header{}
-	header.Add("Access-Control-Allow-Origin", "*")
+
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -53,7 +53,9 @@ func launchServer(ctx *cli.Context) error {
 			        self.end_headers()
 		*/
 
-		header.Add("Content-type", "text/html; charset=utf-8")
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		//header.Add("Access-Control-Allow-Origin", "*")
+
 
 		netPath := r.URL.Path[0:]
 
@@ -70,9 +72,14 @@ func launchServer(ctx *cli.Context) error {
 		} else {
 			if fileInfo.IsDir() {
 
+				header.Add("Content-type", "text/html; charset=utf-8")
+
 				displayContent := params.SimpleListDirPage(netPath, finalPath)
 				fmt.Fprint(w, displayContent)
 			} else {
+
+				header.Add("Content-type", "text/plain; charset=utf-8")
+
 				buffer, errReadF := ioutil.ReadFile(finalPath)
 				if errReadF == nil {
 					writer := bufio.NewWriter(w)
